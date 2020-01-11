@@ -1,0 +1,49 @@
+---
+title: "Lab 1 - ID"
+author: "Ilayda Dinc"
+date: "1/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(kableExtra)
+```
+
+Read in noaa_fisheries.csv data
+
+it needs to look into the data folder-- use data/ -- not really useful
+using here packages gives a way to get away with it. give the pathway using commas.
+
+```{r}
+us_landings <- read_csv(here("data", "noaa_fisheries.csv"))
+```
+
+titles need to be changed
+dollar sign - r will read it as character
+mutate can be useful to reformat an existing column -- usually you don't wanna replace an existing column but here is fine
+check the class of dollars_usd - it is probably gonna be character. We could use tidyr separate.We can use readr to parse data. parse_number will drop any non-numeric characters before or after the first number.
+
+Now, make a tidy version of the data frame
+
+```{r}
+landings_tidy<-us_landings %>% 
+  janitor::clean_names() %>% 
+  mutate(state= str_to_lower(state),
+        afs_name=str_to_lower(afs_name)) %>% 
+  mutate(dollars_num=parse_number(dollars_usd))
+  
+```
+
+Let's just get some information for salmon:
+
+```{r}
+salmon_landings <-landings_tidy %>% 
+  mutate(afs_clean=str_remove(afs_name,pattern="aggregate"))
+  
+```
+
+word aggreagate is not relevant.
